@@ -618,7 +618,7 @@
   }
   async function loadDataFromSharePoint(){
     try {
-      const data = await fetchJson(DATA_URL_API);
+      const data = await fetchJson(DATA_URL);
       const rows = Array.isArray(data) ? data : data.vessels;
       if (!Array.isArray(rows) || !rows.length) throw new Error('JSON file does not contain vessel rows.');
       VESSELS = normalizeVesselData(rows);
