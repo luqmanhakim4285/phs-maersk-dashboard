@@ -484,7 +484,19 @@
     <div class="data-status" id="dataStatus"></div>
   </div>
 </header>
+</header>
 
+<div class="kpi-row" id="kpiRow"></div>
+
+<div class="filter-row" id="filterRow">
+  <span class="filter-label">Filter</span>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>
+...
+</footer>
 <footer>Berth data reflects most recent report · % PHS = variance vs. port-hour target (positive = ahead of target hours) · Sorted by completion, least complete first</footer>
 
 <script>
@@ -910,6 +922,3 @@ async function loadDataFromSharePoint(){
 
 </body>
 </html>
-
-loadDataFromSharePoint();
-setInterval(loadDataFromSharePoint, 300000);
