@@ -483,7 +483,7 @@
     <div class="clock-label" id="clockDate">LOCAL TIME</div>
     <div class="data-status" id="dataStatus"></div>
   </div>
-</header>
+
 </header>
 
 <div class="kpi-row" id="kpiRow"></div>
@@ -495,10 +495,8 @@
 <div class="grid" id="grid"></div>
 
 <footer>
-...
+  Berth data reflects most recent report · % PHS = variance vs. port-hour target (positive = ahead of target hours) · Sorted by completion, least complete first
 </footer>
-<footer>Berth data reflects most recent report · % PHS = variance vs. port-hour target (positive = ahead of target hours) · Sorted by completion, least complete first</footer>
-
 <script>
   const SAMPLE_VESSELS = [
     { ref:'U1B632S', name:'MAERSK BISCAYNE', category:'MAINLINER', etc:'7/8/2026 13:28', moves:2423, movesRange:'V 2001–2500', portHours:25.48, phTarget:24.11, phsPct:-5.7, tier:1, completedPct:97, incentiveEtc:'7/8/2026 7:17', minIncentive:'20%' },
@@ -862,50 +860,6 @@ async function loadDataFromSharePoint(){
     URL.revokeObjectURL(url);
   }
 
-  function showModalMsg(text, type){
-    const el = document.getElementById('modalMsg');
-    el.textContent = text;
-    el.className = 'modal-msg ' + type;
-  }
-
-  function clearModalMsg(){
-    const el = document.getElementById('modalMsg');
-    el.textContent = ''; el.className = 'modal-msg';
-  }
-
-  function handleFile(file){
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const text = reader.result;
-        const isJSON = file.name.toLowerCase().endsWith('.json');
-        const vessels = isJSON ? jsonToVessels(text) : csvToVessels(text);
-        VESSELS = vessels;
-        lastUpdatedLabel = 'UPDATED ' + new Date().toLocaleString('en-GB', { hour12:false });
-        persistData();
-        activeCategory = 'ALL';
-        renderAll();
-        showModalMsg(`Loaded ${vessels.length} vessel${vessels.length === 1 ? '' : 's'} successfully.`, 'success');
-        setTimeout(closeUploadModal, 900);
-      } catch(err){
-        showModalMsg(err.message || 'Could not parse that file.', 'error');
-      }
-    };
-    reader.onerror = () => showModalMsg('Could not read that file.', 'error');
-    reader.readAsText(file);
-  }
-
-  function openUploadModal(){
-    clearModalMsg();
-    document.getElementById('uploadOverlay').classList.add('open');
-  }
-  function closeUploadModal(){
-    document.getElementById('uploadOverlay').classList.remove('open');
-    clearModalMsg();
-    document.getElementById('fileInput').value = '';
-  }
-
-  document.getElementById('templateBtn').addEventListener('click', downloadTemplate);
   document.getElementById('templateBtnModal').addEventListener('click', downloadTemplate);
 
     dropZone.classList.remove('dragover');
