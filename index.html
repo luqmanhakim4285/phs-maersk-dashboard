@@ -688,4 +688,68 @@ async function loadDataFromJson(){
     VESSELS = normalizeVesselData(rows);
     activeCategory = 'ALL';
 
+    lastUpdatedLabel =
+  'AUTO REFRESH ' +
+  new Date().toLocaleString('en-GB', { hour12:false });
+
+renderAll();
+}
+catch(err){
+    console.error(err);
+
+    VESSELS = SAMPLE_VESSELS;
+
+    lastUpdatedLabel = 'USING SAMPLE DATA';
+
+    renderAll();
+}
+}
+
+  function status(phsPct){
+  if (phsPct >= 20) return 'ahead';
+  if (phsPct >= 0) return 'risk';
+  return 'behind';
+}
+
+function statusColorVar(s){
+  return s === 'ahead'
+      ? 'var(--teal)'
+      : s === 'risk'
+      ? 'var(--amber)'
+      : 'var(--red)';
+}
+
+  function tickClock(){
+  const now = new Date();
+
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('en-GB',{hour12:false});
+
+  document.getElementById('clockDate').textContent =
+    now.toLocaleDateString('en-GB',{
+      weekday:'short',
+      year:'numeric',
+      month:'short',
+      day:'numeric'
+    }).toUpperCase();
+}
+
+function renderDataStatus(){
+  document.getElementById('dataStatus').textContent =
+      lastUpdatedLabel;
+}
+
+function renderAll(){
+  renderKPIs();
+  renderFilters();
+  renderGrid();
+  renderDataStatus();
+}
+
+tickClock();
+loadDataFromJson();
+
+setInterval(tickClock,1000);
+setInterval(loadDataFromJson,300000);
+
   
