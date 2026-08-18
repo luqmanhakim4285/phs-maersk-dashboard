@@ -524,8 +524,8 @@
   ];
 
   const STORAGE_KEY = 'quayWatchVesselData';
-  const DATA_URL = 'https://ptpcommy.sharepoint.com/sites/prodteamsite/ops/opsstat/Shared%20Documents/SHARING%20I/REPORT/PTP%20STATISTICS/Auto%20Run%20Report/2026/PHS_Data.json';
-  const DATA_URL_API = "https://ptpcommy.sharepoint.com/sites/prodteamsite/ops/opsstat/_api/web/GetFileByServerRelativeUrl('/sites/prodteamsite/ops/opsstat/Shared Documents/SHARING I/REPORT/PTP STATISTICS/Auto Run Report/2026/PHS_Data.json')/$value";
+  const DATA_URL =
+'./PHS_Data.json';
   const FIELD_MAP = [
     { key:'ref',           label:'visit_ref' },
     { key:'name',          label:'vessel_name' },
@@ -632,9 +632,33 @@
     if (!response.ok) throw new Error('Failed to load data from ' + url);
     return await response.json();
   }
-  async function loadDataFromSharePoint(){
+async function loadDataFromSharePoint(){
     try {
-      const data = await fetchJson(DATA_URL_API);
+      const data = await fetchJson(DATA_URL);
+
+      const rows = Array.isArray(data)
+          ? data
+          : data.vessels;
+
+      if (!Array.isArray(rows) || !rows.length)
+          throw new Error('No vessel rows found.');
+
+      VESSELS = normalizeVesselData(rows);
+
+      lastUpdatedLabel =
+          'AUTO REFRESH ' +
+          new Date().toLocaleString('en-GB',{hour12:false});
+
+      activeCategory='ALL';
+      renderAll();
+    }
+    catch(err){
+      console.error(err);
+      lastUpdatedLabel='USING LOCAL DATA';
+      renderDataStatus();
+    }
+}
+`
       const rows = Array.isArray(data) ? data : data.vessels;
       if (!Array.isArray(rows) || !rows.length) throw new Error('JSON file does not contain vessel rows.');
       VESSELS = normalizeVesselData(rows);
