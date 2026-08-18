@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg-void: #060b12;
+    --bg-panel: #0e1a27;
+    --bg-raised: #142639;
+    --line: rgba(234,242,248,0.09);
+    --line-strong: rgba(234,242,248,0.18);
+    --ink: #eaf2f8;
+    --ink-muted: #7d94a8;
+    --ink-faint: #47617a;
+    --teal: #27d6a8;
+    --teal-dim: rgba(39,214,168,0.14);
+    --amber: #f5a623;
+    --amber-dim: rgba(245,166,35,0.14);
+    --red: #ff6161;
+    --red-dim: rgba(255,97,97,0.14);
+    --gold: #e8b84b;
+    --silver: #9fb2c4;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'IBM Plex Sans', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  body{
+    background:
+      radial-gradient(ellipse 1200px 600px at 15% -10%, rgba(39,214,168,0.06), transparent 60%),
+      radial-gradient(ellipse 900px 500px at 100% 0%, rgba(245,166,35,0.05), transparent 55%),
+      var(--bg-void);
+    color: var(--ink);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    padding: 28px 32px 60px;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    display:flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 26px;
+  }
+  .brand{ display:flex; align-items:center; gap:14px; }
+  .brand-mark{
+    width: 40px; height:40px; border-radius:8px;
+    background: linear-gradient(160deg, var(--bg-raised), var(--bg-panel));
+    border: 1px solid var(--line-strong);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .brand-mark svg{ width:20px; height:20px; }
+  .brand-name{
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+  }
+  .brand-sub{
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .clock-block{ text-align:right; }
+  .clock{
+    font-family: var(--font-mono);
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .clock-label{
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* ---------- KPI strip ---------- */
+  .kpi-row{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .kpi{
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .kpi.teal{ border-left-color: var(--teal); }
+  .kpi.amber{ border-left-color: var(--amber); }
+  .kpi.red{ border-left-color: var(--red); }
+  .kpi-value{
+    font-family: var(--font-mono);
+    font-size: 26px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi-label{
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-top: 4px;
+  }
+
+  /* ---------- Filters ---------- */
+  .filter-row{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .filter-label{
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-right: 4px;
+  }
+  .chip{
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted);
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 6px 14px;
+    cursor:pointer;
+    transition: all .15s ease;
+  }
+  .chip:hover{ border-color: var(--line-strong); color: var(--ink); }
+  .chip.active{
+    background: var(--teal-dim);
+    border-color: var(--teal);
+    color: var(--teal);
+  }
+
+  /* ---------- Vessel grid ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  .card{
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 20px 16px;
+    display:flex;
+    flex-direction:column;
+    gap: 12px;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .card:hover{ border-color: var(--line-strong); }
+
+  .card-top{
+    display:flex;
+    justify-content: space-between;
+    align-items:flex-start;
+  }
+  .ref-tag{
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--ink-faint);
+    letter-spacing: 0.05em;
+  }
+  .badges{ display:flex; gap:6px; align-items:center; }
+  .badge{
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--line-strong);
+    color: var(--ink-muted);
+  }
+  .badge.category{ color: var(--ink-muted); }
+  .badge.tier1{ color: var(--gold); border-color: rgba(232,184,75,0.4); background: rgba(232,184,75,0.08); }
+  .badge.tier2{ color: var(--silver); border-color: rgba(159,178,196,0.35); background: rgba(159,178,196,0.06); }
+
+  .beacon{
+    width: 9px; height:9px; border-radius: 50%;
+    flex-shrink:0;
+  }
+  .beacon.ahead{ background: var(--teal); box-shadow: 0 0 8px 1px rgba(39,214,168,0.6); animation: pulse 2.4s ease-in-out infinite; }
+  .beacon.risk{ background: var(--amber); box-shadow: 0 0 8px 1px rgba(245,166,35,0.55); animation: pulse 2.4s ease-in-out infinite; }
+  .beacon.behind{ background: var(--red); box-shadow: 0 0 8px 1px rgba(255,97,97,0.55); animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse{
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .beacon{ animation: none !important; }
+  }
+
+  .vessel-name{
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    display:flex; align-items:center; gap:8px;
+  }
+  .moves-line{
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--ink-muted);
+  }
+  .moves-line b{ color: var(--ink); font-weight:500; }
+
+  .gauge-block{ margin-top: 2px; }
+  .gauge-labels{
+    display:flex; justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 5px;
+  }
+  .gauge-labels .val{ color: var(--ink); font-size: 12px; letter-spacing: normal; text-transform:none; }
+  .gauge-track{
+    height: 7px;
+    background: rgba(234,242,248,0.06);
+    border-radius: 4px;
+    overflow:hidden;
+  }
+  .gauge-fill{ height:100%; border-radius: 4px; }
+
+  .stat-pair{
+    display:flex;
+    gap: 10px;
+  }
+  .stat-box{
+    flex:1;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+  .stat-box .lbl{
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .stat-box .num{
+    font-family: var(--font-mono);
+    font-size: 15px;
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .ph-line{
+    display:flex;
+    align-items:flex-end;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .sub-lbl{
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .ph-sep{
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--ink-faint);
+    padding-bottom: 1px;
+  }
+  .delta-pill{
+    display:inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-top: 3px;
+  }
+  .delta-pill.ahead{ background: var(--teal-dim); color: var(--teal); }
+  .delta-pill.risk{ background: var(--amber-dim); color: var(--amber); }
+  .delta-pill.behind{ background: var(--red-dim); color: var(--red); }
+
+  .card-foot{
+    border-top: 1px solid var(--line);
+    padding-top: 10px;
+    display:flex;
+    flex-direction:column;
+    gap: 6px;
+  }
+  .foot-row{
+    display:flex; justify-content: space-between; align-items:baseline;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .foot-row .k{ color: var(--ink-faint); letter-spacing: 0.05em; text-transform: uppercase; font-size: 9.5px; }
+  .foot-row .v{ color: var(--ink); }
+  .foot-row .v.overdue{ color: var(--red); }
+  .foot-row .v.ok{ color: var(--teal); }
+
+  footer{
+    margin-top: 34px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 720px){
+    .kpi-row{ grid-template-columns: repeat(2, 1fr); }
+    body{ padding: 20px 16px 40px; }
+  }
+
+  /* ---------- Upload controls ---------- */
+  .header-actions{ display:flex; align-items:center; gap:10px; }
+  .btn{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    background: var(--bg-panel);
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: all .15s ease;
+    white-space: nowrap;
+  }
+  .btn:hover{ color: var(--ink); border-color: var(--teal); }
+  .btn.primary{ color: var(--teal); border-color: var(--teal); background: var(--teal-dim); }
+  .btn.ghost{ background: transparent; }
+  .data-status{
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-top: 4px;
+    text-align: right;
+  }
+
+  .modal-overlay{
+    display:none;
+    position: fixed; inset: 0;
+    background: rgba(3,7,12,0.72);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal{
+    background: var(--bg-panel);
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 480px;
+    padding: 24px;
+  }
+  .modal h2{
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .modal p{
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .drop-zone{
+    border: 1.5px dashed var(--line-strong);
+    border-radius: 8px;
+    padding: 28px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .15s ease;
+    margin-bottom: 12px;
+  }
+  .drop-zone:hover, .drop-zone.dragover{
+    border-color: var(--teal);
+    background: var(--teal-dim);
+  }
+  .drop-zone .dz-title{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+  }
+  .drop-zone .dz-sub{
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--ink-faint);
+    margin-top: 4px;
+  }
+  .modal-msg{
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    display:none;
+  }
+  .modal-msg.error{ display:block; background: var(--red-dim); color: var(--red); }
+  .modal-msg.success{ display:block; background: var(--teal-dim); color: var(--teal); }
+  .modal-actions{
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    gap: 10px;
+    margin-top: 4px;
+  }
+</style>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor msdt:dt="string">Luqman Hakim A. Hamid</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor>
+<mso:Order msdt:dt="string">2513600.00000000</mso:Order>
+<mso:_activity msdt:dt="string">{&quot;FileActivityType&quot;:&quot;9&quot;,&quot;FileActivityTimeStamp&quot;:&quot;2026-08-10T09:27:34.670Z&quot;,&quot;FileActivityUsersOnPage&quot;:[{&quot;DisplayName&quot;:&quot;Luqman Hakim A. Hamid&quot;,&quot;Id&quot;:&quot;luqmanhakim@ptp.com.my&quot;}],&quot;FileActivityNavigationId&quot;:null}</mso:_activity>
+<mso:SharedWithUsers msdt:dt="string"></mso:SharedWithUsers>
+<mso:_ExtendedDescription msdt:dt="string"></mso:_ExtendedDescription>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author msdt:dt="string">Luqman Hakim A. Hamid</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author>
+<mso:ComplianceAssetId msdt:dt="string"></mso:ComplianceAssetId>
+<mso:TriggerFlowInfo msdt:dt="string"></mso:TriggerFlowInfo>
+<mso:ContentTypeId msdt:dt="string">0x010100BA55BF929C2E3B4BB9AA0D9DF61B7919</mso:ContentTypeId>
+<mso:_SourceUrl msdt:dt="string"></mso:_SourceUrl>
+<mso:_SharedFileIndex msdt:dt="string"></mso:_SharedFileIndex>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 17L5 21H19L21 17" stroke="#27D6A8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M6 17V9H18V17" stroke="#EAF2F8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 9V3" stroke="#EAF2F8" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M12 3L16 6" stroke="#F5A623" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-name">PHS MAERSK INCENTIVE - ALONGSIDE VESSEL</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="btn primary" id="openUploadBtn">Upload Data</button>
+    <button class="btn ghost" id="templateBtn">Download Template</button>
+    <button class="btn ghost" id="resetBtn">Reset Sample</button>
+  </div>
+  <div class="clock-block">
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="clock-label" id="clockDate">LOCAL TIME</div>
+    <div class="data-status" id="dataStatus"></div>
+  </div>
+</header>
+
+<div class="modal-overlay" id="uploadOverlay">
+  <div class="modal">
+    <h2>Upload Latest Data</h2>
+    <p>Upload a CSV or JSON export of your vessel data to refresh the board. Not sure of the format? Grab the template first.</p>
+    <div class="modal-msg" id="modalMsg"></div>
+    <div class="drop-zone" id="dropZone">
+      <div class="dz-title">Click to choose a file, or drag it here</div>
+      <div class="dz-sub">.CSV or .JSON</div>
+    </div>
+    <input type="file" id="fileInput" accept=".csv,.json,application/json,text/csv" style="display:none">
+    <div class="modal-actions">
+      <button class="btn ghost" id="templateBtnModal">Download Template</button>
+      <button class="btn ghost" id="closeUploadBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="kpi-row" id="kpiRow"></div>
+
+<div class="filter-row" id="filterRow">
+  <span class="filter-label">Filter</span>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>Berth data reflects most recent report · % PHS = variance vs. port-hour target (positive = ahead of target hours) · Sorted by completion, least complete first</footer>
+
+<script>
+  const SAMPLE_VESSELS = [
+    { ref:'U1B632S', name:'MAERSK BISCAYNE', category:'MAINLINER', etc:'7/8/2026 13:28', moves:2423, movesRange:'V 2001–2500', portHours:25.48, phTarget:24.11, phsPct:-5.7, tier:1, completedPct:97, incentiveEtc:'7/8/2026 7:17', minIncentive:'20%' },
+    { ref:'T9A632N', name:'SYNERGY BUSAN', category:'MAINLINER', etc:'8/8/2026 0:47', moves:1989, movesRange:'IV 1501–2000', portHours:17.64, phTarget:23.59, phsPct:25.2, tier:2, completedPct:18, incentiveEtc:'8/8/2026 2:01', minIncentive:'20%' },
+    { ref:'LC5631S', name:'KOTA LUKIS', category:'MAINLINER', etc:'8/8/2026 1:11', moves:2211, movesRange:'V 2001–2500', portHours:23.23, phTarget:22.00, phsPct:-5.6, tier:1, completedPct:60, incentiveEtc:'7/8/2026 19:34', minIncentive:'20%' },
+    { ref:'1VM630W', name:'MAREN MAERSK', category:'MAINLINER', etc:'8/8/2026 10:35', moves:8887, movesRange:'X 7001–9000', portHours:44.51, phTarget:42.87, phsPct:-3.8, tier:1, completedPct:47, incentiveEtc:'8/8/2026 0:22', minIncentive:'20%' },
+    { ref:'EQ8632S', name:'MERATUS MEDAN 5', category:'FEEDER', etc:'7/8/2026 20:19', moves:823, movesRange:'II 501–1000', portHours:24.91, phTarget:20.99, phsPct:-18.7, tier:1, completedPct:54, incentiveEtc:'7/8/2026 12:12', minIncentive:'20%' },
+  ];
+
+  const STORAGE_KEY = 'quayWatchVesselData';
+  const DATA_URL = 'https://ptpcommy.sharepoint.com/sites/prodteamsite/ops/opsstat/Shared%20Documents/SHARING%20I/REPORT/PTP%20STATISTICS/Auto%20Run%20Report/2026/PHS_Data.json';
+  const DATA_URL_API = "https://ptpcommy.sharepoint.com/sites/prodteamsite/ops/opsstat/_api/web/GetFileByServerRelativeUrl('/sites/prodteamsite/ops/opsstat/Shared Documents/SHARING I/REPORT/PTP STATISTICS/Auto Run Report/2026/PHS_Data.json')/$value";
+  const FIELD_MAP = [
+    { key:'ref',           label:'visit_ref' },
+    { key:'name',          label:'vessel_name' },
+    { key:'category',      label:'Category' },
+    { key:'etc',           label:'ETC' },
+    { key:'moves',         label:'Total Moves' },
+    { key:'movesRange',    label:'Moves Range' },
+    { key:'portHours',     label:'Port hours' },
+    { key:'phTarget',      label:'PH Target' },
+    { key:'phsPct',        label:'% PHS' },
+    { key:'tier',          label:'Tier Achieved' },
+    { key:'completedPct',  label:'% Completed' },
+    { key:'incentiveEtc',  label:'ETC to Achieve Incentive (20%)' },
+    { key:'minIncentive',  label:'Target Incentive' },
+  ];
+  const NUMERIC_FIELDS = ['moves','portHours','phTarget','phsPct','tier','completedPct'];
+
+  let VESSELS = SAMPLE_VESSELS;
+  let lastUpdatedLabel = 'SAMPLE DATA';
+
+  function loadSavedData(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed.vessels) && parsed.vessels.length){
+        VESSELS = parsed.vessels;
+        lastUpdatedLabel = 'UPDATED ' + new Date(parsed.savedAt).toLocaleString('en-GB', { hour12:false });
+      }
+    } catch(e) { /* ignore corrupt storage, fall back to sample */ }
+  }
+
+  function persistData(){
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ vessels: VESSELS, savedAt: Date.now() }));
+    } catch(e) { /* storage unavailable, continue without persistence */ }
+  }
+
+  function excelSerialToDate(serial){
+    const n = Number(serial);
+    if (!isFinite(n)) return null;
+    const utc = new Date((n - 25569) * 86400000);
+    return new Date(utc.getUTCFullYear(), utc.getUTCMonth(), utc.getUTCDate(), utc.getUTCHours(), utc.getUTCMinutes());
+  }
+  function parseDT(value){
+    if (value instanceof Date) return value;
+    if (value === null || value === undefined || value === '') return new Date(NaN);
+    const raw = String(value).trim();
+    if (/^\d+(\.\d+)?$/.test(raw)) return excelSerialToDate(raw);
+    const parts = raw.split(' ');
+    if (parts.length >= 2 && parts[0].includes('/')){
+      const [d, m, y] = parts[0].split('/').map(Number);
+      const [hh, mm] = parts[1].split(':').map(Number);
+      return new Date(y, m - 1, d, hh || 0, mm || 0);
+    }
+    return new Date(raw);
+  }
+  function fmtShortDT(value){
+    const dt = parseDT(value);
+    if (isNaN(dt)) return '-';
+    return dt.toLocaleDateString('en-GB', { day:'2-digit', month:'2-digit' }) + ' ' +
+      dt.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', hour12:false });
+  }
+  function timingClass(value){
+    const dt = parseDT(value);
+    if (isNaN(dt)) return '';
+    return (dt - new Date() < 0) ? 'overdue' : 'ok';
+  }
+  function toNumber(value, fallback = 0){
+    const n = Number(value);
+    return isFinite(n) ? n : fallback;
+  }
+  function toPercent(value){
+    const n = toNumber(value);
+    return Math.abs(n) <= 1 ? n * 100 : n;
+  }
+  function toIncentiveText(value){
+    if (value === null || value === undefined || value === '') return '-';
+    if (String(value).includes('%')) return String(value);
+    const n = Number(value);
+    if (!isFinite(n)) return String(value);
+    const pct = Math.abs(n) <= 1 ? n * 100 : n;
+    return (Math.round(pct * 10) / 10).toString().replace(/\.0$/, '') + '%';
+  }
+  function normalizeVesselData(rows){
+    return rows.map(v => ({
+      ref: v.ref ?? '',
+      name: v.name ?? '',
+      category: v.category ?? '',
+      etc: v.etc ?? '',
+      moves: toNumber(v.moves),
+      movesRange: v.movesRange ?? '',
+      portHours: toNumber(v.portHours),
+      phTarget: toNumber(v.phTarget),
+      phsPct: toPercent(v.phsPct),
+      tier: toNumber(v.tier),
+      completedPct: toPercent(v.completedPct),
+      incentiveEtc: v.incentiveEtc ?? '',
+      minIncentive: toIncentiveText(v.minIncentive)
+    }));
+  }
+  async function fetchJson(url){
+    const response = await fetch(url, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } });
+    if (!response.ok) throw new Error('Failed to load data from ' + url);
+    return await response.json();
+  }
+  async function loadDataFromSharePoint(){
+    try {
+      const data = await fetchJson(DATA_URL_API);
+      const rows = Array.isArray(data) ? data : data.vessels;
+      if (!Array.isArray(rows) || !rows.length) throw new Error('JSON file does not contain vessel rows.');
+      VESSELS = normalizeVesselData(rows);
+      lastUpdatedLabel = 'AUTO REFRESH ' + new Date().toLocaleString('en-GB', { hour12:false });
+      activeCategory = 'ALL';
+      renderAll();
+    } catch(err) {
+      console.error(err);
+      lastUpdatedLabel = 'USING LOCAL DATA';
+      renderDataStatus();
+    }
+  }
+  function status(phsPct){
+    if (phsPct >= 20) return 'ahead';
+    if (phsPct >= 0) return 'risk';
+    return 'behind';
+  }
+
+  function statusColorVar(s){
+    return s === 'ahead' ? 'var(--teal)' : s === 'risk' ? 'var(--amber)' : 'var(--red)';
+  }
+
+  let activeCategory = 'ALL';
+
+  function renderKPIs(){
+    const total = VESSELS.length;
+    const ahead = VESSELS.filter(v => status(v.phsPct) === 'ahead').length;
+    const behind = VESSELS.filter(v => status(v.phsPct) === 'behind').length;
+    const avgCompletion = total ? Math.round(VESSELS.reduce((s,v)=>s+Number(v.completedPct || 0),0) / total) : 0;
+
+    const kpis = [
+      { label: 'Vessels Alongside', value: total, cls: '' },
+      { label: 'Ahead of PH Target', value: ahead, cls: 'teal' },
+      { label: 'Behind PH Target', value: behind, cls: 'red' },
+      { label: 'Avg. Completion', value: avgCompletion + '%', cls: 'amber' },
+    ];
+    document.getElementById('kpiRow').innerHTML = kpis.map(k => `
+      <div class="kpi ${k.cls}">
+        <div class="kpi-value">${k.value}</div>
+        <div class="kpi-label">${k.label}</div>
+      </div>
+    `).join('');
+  }
+
+  function renderFilters(){
+    const cats = ['ALL', ...new Set(VESSELS.map(v => v.category))];
+    const row = document.getElementById('filterRow');
+    row.innerHTML = '<span class="filter-label">Filter</span>' + cats.map(c =>
+      `<button class="chip ${c === activeCategory ? 'active' : ''}" data-cat="${c}">${c}${c!=='ALL' ? ' ('+VESSELS.filter(v=>v.category===c).length+')' : ''}</button>`
+    ).join('');
+    row.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        activeCategory = chip.dataset.cat;
+        renderFilters();
+        renderGrid();
+      });
+    });
+  }
+
+  function renderGrid(){
+    const list = VESSELS
+      .filter(v => activeCategory === 'ALL' || v.category === activeCategory)
+      .slice()
+      .sort((a,b) => a.completedPct - b.completedPct);
+
+    document.getElementById('grid').innerHTML = list.map(v => {
+      const s = status(v.phsPct);
+      const color = statusColorVar(s);
+      const etcDateText = fmtShortDT(v.etc);
+      const incDateText = fmtShortDT(v.incentiveEtc);
+      const tierClass = v.tier === 1 ? 'tier1' : 'tier2';
+
+      return `
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <div class="ref-tag">${v.ref}</div>
+          </div>
+          <div class="badges">
+            <span class="badge category">${v.category}</span>
+            <span class="badge ${tierClass}">TIER ${v.tier}</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="vessel-name"><span class="beacon ${s}"></span>${v.name}</div>
+          <div class="moves-line">${v.movesRange} &nbsp;·&nbsp; <b>${Number(v.moves || 0).toLocaleString()}</b> total moves</div>
+        </div>
+
+        <div class="gauge-block">
+          <div class="gauge-labels">
+            <span>Completion vs. Target</span>
+            <span class="val">${Math.round(Number(v.completedPct || 0))}%</span>
+          </div>
+          <div class="gauge-track">
+            <div class="gauge-fill" style="width:${Math.round(Number(v.completedPct || 0))}%; background:${color};"></div>
+          </div>
+        </div>
+
+        <div class="stat-pair">
+          <div class="stat-box">
+            <div class="lbl">Port Hours</div>
+            <div class="ph-line">
+              <div>
+                <div class="sub-lbl">Current PH</div>
+                <div class="num">${Number(v.portHours || 0).toFixed(2)}</div>
+              </div>
+              <div class="ph-sep">/</div>
+              <div>
+                <div class="sub-lbl">PH Target</div>
+                <div class="num"><span style="color:var(--ink-muted);">${Number(v.phTarget || 0).toFixed(2)}</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="stat-box">
+            <div class="lbl">% PHS Variance</div>
+            <div class="delta-pill ${s}">${Number(v.phsPct || 0) > 0 ? '+' : ''}${Number(v.phsPct || 0).toFixed(1)}%</div>
+          </div>
+        </div>
+
+        <div class="card-foot">
+          <div class="foot-row"><span class="k">ETC</span><span class="v ${timingClass(v.etc)}">${etcDateText}</span></div>
+          <div class="foot-row"><span class="k">Target Incentive (${v.minIncentive}) by</span><span class="v ${timingClass(v.incentiveEtc)}">${incDateText}</span></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function tickClock(){
+    const now = new Date();
+    document.getElementById('clock').textContent = now.toLocaleTimeString('en-GB', { hour12:false });
+    document.getElementById('clockDate').textContent = now.toLocaleDateString('en-GB', { weekday:'short', year:'numeric', month:'short', day:'numeric' }).toUpperCase();
+  }
+
+  function tick(){
+    tickClock();
+    renderGrid();
+  }
+
+  function renderDataStatus(){
+    document.getElementById('dataStatus').textContent = lastUpdatedLabel;
+  }
+
+  function renderAll(){
+    renderKPIs();
+    renderFilters();
+    renderGrid();
+    renderDataStatus();
+  }
+
+  /* ---------- CSV / JSON parsing ---------- */
+
+  function parseCSVLine(line){
+    const out = [];
+    let cur = '', inQuotes = false;
+    for (let i = 0; i < line.length; i++){
+      const ch = line[i];
+      if (inQuotes){
+        if (ch === '"'){
+          if (line[i+1] === '"'){ cur += '"'; i++; }
+          else inQuotes = false;
+        } else cur += ch;
+      } else {
+        if (ch === '"') inQuotes = true;
+        else if (ch === ','){ out.push(cur); cur = ''; }
+        else cur += ch;
+      }
+    }
+    out.push(cur);
+    return out.map(s => s.trim());
+  }
+
+  function csvToVessels(text){
+    const lines = text.split(/\r?\n/).filter(l => l.trim().length);
+    if (lines.length < 2) throw new Error('CSV needs a header row plus at least one data row.');
+    const headers = parseCSVLine(lines[0]).map(h => h.trim());
+    const missing = FIELD_MAP.filter(f => !headers.some(h => h.toLowerCase() === f.label.toLowerCase()));
+    if (missing.length) throw new Error('Missing column(s): ' + missing.map(f => f.label).join(', '));
+
+    return lines.slice(1).map((line, idx) => {
+      const cells = parseCSVLine(line);
+      const row = {};
+      headers.forEach((h, i) => {
+        const field = FIELD_MAP.find(f => f.label.toLowerCase() === h.toLowerCase());
+        if (field) row[field.key] = cells[i] !== undefined ? cells[i] : '';
+      });
+      NUMERIC_FIELDS.forEach(f => {
+        const n = parseFloat(row[f]);
+        if (isNaN(n)) throw new Error(`Row ${idx + 2}: "${FIELD_MAP.find(m=>m.key===f).label}" must be a number (got "${row[f]}").`);
+        row[f] = n;
+      });
+      if (!row.ref || !row.name) throw new Error(`Row ${idx + 2}: "visit_ref" and "vessel_name" are required.`);
+      return row;
+    });
+  }
+
+  function jsonToVessels(text){
+    const parsed = JSON.parse(text);
+    const arr = Array.isArray(parsed) ? parsed : parsed.vessels;
+    if (!Array.isArray(arr) || !arr.length) throw new Error('JSON must be an array of vessels, or an object with a "vessels" array.');
+    return arr.map((rawRow, idx) => {
+      const row = {};
+      FIELD_MAP.forEach(f => {
+        const matchKey = Object.keys(rawRow).find(k => k.toLowerCase() === f.label.toLowerCase() || k === f.key);
+        if (matchKey === undefined) throw new Error(`Row ${idx + 1}: missing field "${f.label}".`);
+        row[f.key] = rawRow[matchKey];
+      });
+      NUMERIC_FIELDS.forEach(f => {
+        const n = Number(row[f]);
+        if (isNaN(n)) throw new Error(`Row ${idx + 1}: "${FIELD_MAP.find(m=>m.key===f).label}" must be a number.`);
+        row[f] = n;
+      });
+      return normalizeVesselData([row])[0];
+    });
+  }
+
+  function csvTemplate(){
+    const header = FIELD_MAP.map(f => f.label).join(',');
+    const example = SAMPLE_VESSELS.map(v => FIELD_MAP.map(f => v[f.key]).join(',')).join('\n');
+    return header + '\n' + example;
+  }
+
+  function downloadTemplate(){
+    const blob = new Blob([csvTemplate()], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'quay_watch_data_template.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function showModalMsg(text, type){
+    const el = document.getElementById('modalMsg');
+    el.textContent = text;
+    el.className = 'modal-msg ' + type;
+  }
+
+  function clearModalMsg(){
+    const el = document.getElementById('modalMsg');
+    el.textContent = ''; el.className = 'modal-msg';
+  }
+
+  function handleFile(file){
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const text = reader.result;
+        const isJSON = file.name.toLowerCase().endsWith('.json');
+        const vessels = isJSON ? jsonToVessels(text) : csvToVessels(text);
+        VESSELS = vessels;
+        lastUpdatedLabel = 'UPDATED ' + new Date().toLocaleString('en-GB', { hour12:false });
+        persistData();
+        activeCategory = 'ALL';
+        renderAll();
+        showModalMsg(`Loaded ${vessels.length} vessel${vessels.length === 1 ? '' : 's'} successfully.`, 'success');
+        setTimeout(closeUploadModal, 900);
+      } catch(err){
+        showModalMsg(err.message || 'Could not parse that file.', 'error');
+      }
+    };
+    reader.onerror = () => showModalMsg('Could not read that file.', 'error');
+    reader.readAsText(file);
+  }
+
+  function openUploadModal(){
+    clearModalMsg();
+    document.getElementById('uploadOverlay').classList.add('open');
+  }
+  function closeUploadModal(){
+    document.getElementById('uploadOverlay').classList.remove('open');
+    clearModalMsg();
+    document.getElementById('fileInput').value = '';
+  }
+
+  document.getElementById('openUploadBtn').addEventListener('click', openUploadModal);
+  document.getElementById('closeUploadBtn').addEventListener('click', closeUploadModal);
+  document.getElementById('uploadOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'uploadOverlay') closeUploadModal();
+  });
+  document.getElementById('templateBtn').addEventListener('click', downloadTemplate);
+  document.getElementById('templateBtnModal').addEventListener('click', downloadTemplate);
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    VESSELS = SAMPLE_VESSELS;
+    lastUpdatedLabel = 'SAMPLE DATA';
+    localStorage.removeItem(STORAGE_KEY);
+    activeCategory = 'ALL';
+    renderAll();
+  });
+
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  dropZone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) handleFile(fileInput.files[0]);
+  });
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+
+  loadSavedData();
+  renderAll();
+  tickClock();
+  loadDataFromSharePoint();
+  setInterval(tick, 1000);
+  setInterval(loadDataFromSharePoint, 300000);
+</script>
+
+</body>
+</html>
