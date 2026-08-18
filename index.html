@@ -475,42 +475,15 @@
       <div class="brand-name">PHS MAERSK INCENTIVE - ALONGSIDE VESSEL</div>
     </div>
   </div>
-  <div class="header-actions">
-    <button class="btn primary" id="openUploadBtn">Upload Data</button>
+<div class="header-actions">
     <button class="btn ghost" id="templateBtn">Download Template</button>
-    <button class="btn ghost" id="resetBtn">Reset Sample</button>
-  </div>
+</div>
   <div class="clock-block">
     <div class="clock" id="clock">--:--:--</div>
     <div class="clock-label" id="clockDate">LOCAL TIME</div>
     <div class="data-status" id="dataStatus"></div>
   </div>
 </header>
-
-<div class="modal-overlay" id="uploadOverlay">
-  <div class="modal">
-    <h2>Upload Latest Data</h2>
-    <p>Upload a CSV or JSON export of your vessel data to refresh the board. Not sure of the format? Grab the template first.</p>
-    <div class="modal-msg" id="modalMsg"></div>
-    <div class="drop-zone" id="dropZone">
-      <div class="dz-title">Click to choose a file, or drag it here</div>
-      <div class="dz-sub">.CSV or .JSON</div>
-    </div>
-    <input type="file" id="fileInput" accept=".csv,.json,application/json,text/csv" style="display:none">
-    <div class="modal-actions">
-      <button class="btn ghost" id="templateBtnModal">Download Template</button>
-      <button class="btn ghost" id="closeUploadBtn">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<div class="kpi-row" id="kpiRow"></div>
-
-<div class="filter-row" id="filterRow">
-  <span class="filter-label">Filter</span>
-</div>
-
-<div class="grid" id="grid"></div>
 
 <footer>Berth data reflects most recent report · % PHS = variance vs. port-hour target (positive = ahead of target hours) · Sorted by completion, least complete first</footer>
 
@@ -658,19 +631,6 @@ async function loadDataFromSharePoint(){
       renderDataStatus();
     }
 }
-`
-      const rows = Array.isArray(data) ? data : data.vessels;
-      if (!Array.isArray(rows) || !rows.length) throw new Error('JSON file does not contain vessel rows.');
-      VESSELS = normalizeVesselData(rows);
-      lastUpdatedLabel = 'AUTO REFRESH ' + new Date().toLocaleString('en-GB', { hour12:false });
-      activeCategory = 'ALL';
-      renderAll();
-    } catch(err) {
-      console.error(err);
-      lastUpdatedLabel = 'USING LOCAL DATA';
-      renderDataStatus();
-    }
-  }
   function status(phsPct){
     if (phsPct >= 20) return 'ahead';
     if (phsPct >= 0) return 'risk';
@@ -933,31 +893,9 @@ async function loadDataFromSharePoint(){
     document.getElementById('fileInput').value = '';
   }
 
-  document.getElementById('openUploadBtn').addEventListener('click', openUploadModal);
-  document.getElementById('closeUploadBtn').addEventListener('click', closeUploadModal);
-  document.getElementById('uploadOverlay').addEventListener('click', (e) => {
-    if (e.target.id === 'uploadOverlay') closeUploadModal();
-  });
   document.getElementById('templateBtn').addEventListener('click', downloadTemplate);
   document.getElementById('templateBtnModal').addEventListener('click', downloadTemplate);
-  document.getElementById('resetBtn').addEventListener('click', () => {
-    VESSELS = SAMPLE_VESSELS;
-    lastUpdatedLabel = 'SAMPLE DATA';
-    localStorage.removeItem(STORAGE_KEY);
-    activeCategory = 'ALL';
-    renderAll();
-  });
 
-  const dropZone = document.getElementById('dropZone');
-  const fileInput = document.getElementById('fileInput');
-  dropZone.addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', () => {
-    if (fileInput.files[0]) handleFile(fileInput.files[0]);
-  });
-  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-  dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
     dropZone.classList.remove('dragover');
     if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
   });
@@ -972,3 +910,6 @@ async function loadDataFromSharePoint(){
 
 </body>
 </html>
+
+loadDataFromSharePoint();
+setInterval(loadDataFromSharePoint, 300000);
